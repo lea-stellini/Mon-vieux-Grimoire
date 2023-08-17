@@ -1,7 +1,7 @@
 const Book = require('../models/Book')
 
 exports.addBook = (req, res, next) => {
-    console.log(req.body.book)
+    console.log(req.body)
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
     delete bookObject.userId;
