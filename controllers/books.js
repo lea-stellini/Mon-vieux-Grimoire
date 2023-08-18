@@ -1,13 +1,13 @@
 const Book = require('../models/Book')
 
 exports.addBook = (req, res, next) => {
-    console.log(req.body)
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._id;
     delete bookObject.userId;
     const book = new Book({
         ...bookObject,
-        userId: req.auth.userId
+        userId: req.auth.userId,
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     book.save()
     .then(() => res.status(201).json({message: 'Livre enregistré !'}))

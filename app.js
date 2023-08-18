@@ -2,21 +2,22 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 require('dotenv').config()
+const path = require('path');
 
 const bookRoutes = require('./routes/books');
 const userRoutes = require('./routes/user');
 
 const app = express();
 
-mongoose.connect(`mongodb+srv://leastellini:${process.env.MONGODB}@monvieuxgrimoire.z8jbtfx.mongodb.net/`,
+mongoose.connect(process.env.MONGODB_URI,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-  app.use(bodyParser.urlencoded({
-    extended: true
-  }));
+  // app.use(bodyParser.urlencoded({
+  //   extended: true
+  // }));
   app.use(bodyParser.json())
 
 app.use((req, res, next) => {
@@ -28,5 +29,6 @@ app.use((req, res, next) => {
 
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
