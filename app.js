@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoSanitize = require('express-mongo-sanitize');
 const mongoose = require('mongoose');
 require('dotenv').config()
 const path = require('path');
@@ -15,10 +16,14 @@ mongoose.connect(process.env.MONGODB_URI,
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-  // app.use(bodyParser.urlencoded({
-  //   extended: true
-  // }));
-  app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json())
+app.use(mongoSanitize({
+  replaceWith:'_',
+}));
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
