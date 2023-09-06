@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 require('dotenv').config()
 const path = require('path');
@@ -24,6 +25,10 @@ app.use(mongoSanitize({
   replaceWith:'_',
 }));
 
+app.use(helmet({
+  // afficher les images des livres
+  crossOriginResourcePolicy: false,
+}));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
