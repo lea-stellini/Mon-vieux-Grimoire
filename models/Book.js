@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const ratingSchema = mongoose.Schema({
     userId: { type: String, required: true},
-    grade: { type: Number, required: false},
+    grade: { type: Number, required: true, min: 0, max: 5},
 })
 
 const bookSchema = mongoose.Schema({
@@ -14,7 +14,7 @@ const bookSchema = mongoose.Schema({
     year: { type: Number , required: true },
     genre: { type: String , required: true },
     ratings: {type: [ratingSchema], required: true},
-    averageRating: { type: Number, required: false }
+    averageRating: { type: Number, default: 0 }
 });
 
 // pour effacer index quand userId unique
