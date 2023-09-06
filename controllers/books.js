@@ -29,27 +29,18 @@ exports.addRating = (req, res, next) => {
 
     Book.findOne({_id: req.params.id})
     .then(book => {
-       const notAuthorized = book.ratings.find(user => user.userId === rating.userId)
+        const notAuthorized = book.ratings.find(user => user.userId === rating.userId)
         if(notAuthorized){
             res.status(401).json({message: 'Non autorisé'});
-        } else {
-            Book.findById({_id: req.params.id})
-            .then( book => {
-                const sumRating = book.ratings.reduce((sum, rating) => sum + rating.grade , 0 );
+        } else {   
+            const sumRating = book.ratings.reduce((sum, rating) => sum + rating.grade , 0 );
             
-                const newAverageRating = (sumRating / book.ratings.length).toFixed(0);
+            const newAverageRating = ((sumRating + rating.grade) / (book.ratings.length + 1)).toFixed(0);
 
-                Book.updateOne({_id: req.params.id}, {$push:{ratings: rating, new: true}}, {averageRating: newAverageRating, _id: req.params.id})
-                        .then( () => {
-                            res.status(200).json(book)
-                        })
-                        .catch(error => 
-                            res.status(401).json({ error }));
-                })
-                .catch((error) => 
-                    { res.status(400).json({error})}
-                ) 
-            }
+            Book.findByIdAndUpdate({_id: req.params.id}, {$push:{ratings: rating}, averageRating: newAverageRating}, {new: true})
+            .then( book => {res.status(200).json(book)})
+            .catch((error) => { res.status(400).json({error})})
+        }
     })
     .catch((error) => {
         res.status(400).json({ error });

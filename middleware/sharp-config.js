@@ -8,14 +8,20 @@ module.exports = (req, res, next) => {
             fs.mkdirSync('./images');
         }
     });
-    
-    const timestamp = new Date().toISOString();
-    const path = `${timestamp}-${req.file.originalname}`;
-    sharp(req.file.buffer)
-        .jpeg({quality: 20})
-        .toFile(`./images/${path}`);
-         
-    req.compressedFilename = path   
-        
-    next();
+
+    compressImg = () => {
+        const timestamp = new Date().toISOString();
+        const path = `${timestamp}-${req.file.originalname}`;
+            
+        sharp(req.file.buffer)
+            .jpeg({quality: 20})
+            .toFile(`./images/${path}`);
+                
+        req.compressedFilename = path   
+                
+        next();
+    }
+
+    req.file ?  compressImg() : next()
+
 }
