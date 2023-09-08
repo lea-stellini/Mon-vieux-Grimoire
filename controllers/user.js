@@ -1,12 +1,21 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const User = require('../models/User');
+require('dotenv').config()
 
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
+    let email = req.body.email;
+    let password = req.body.password;
+
+    const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+    if(!regex.test(email) || password.length < 8){
+        res.status(400).json({message: 'Informations incorrectes pour s\'inscrire'})
+    } else {
+        bcrypt.hash(password, 10)
         .then(hash => {
             const user = new User({
-                email: req.body.email,
+                email: email,
                 password: hash
             });
             user.save()
@@ -14,6 +23,7 @@ exports.signup = (req, res, next) => {
                 .catch(error => res.status(400).json({ error }));
         })
         .catch(error => res.status(500).json({ error }));
+    }    
 };
 
 exports.login = (req, res, next) => {
@@ -31,7 +41,7 @@ exports.login = (req, res, next) => {
                         userId : user._id,
                         token: jwt.sign(
                             { userId: user._id},
-                            'RANDOM_TOKEN_SECRET',
+                            process.env.TOKEN,
                             {expiresIn: '24h'}
                         )
                     });

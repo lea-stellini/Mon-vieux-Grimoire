@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
-
-const ratingSchema = mongoose.Schema({
-    userId: { type: String, required: true},
-    grade: { type: Number, required: true, min: 0, max: 5},
-})
+// const ratingSchema = mongoose.Schema({
+//     userId: { type: String, required: true},
+//     grade: { type: Number, required: true, min: 1, max: 5},
+// })
 
 const bookSchema = mongoose.Schema({
     userId: { type: String , required: true},
@@ -13,13 +12,14 @@ const bookSchema = mongoose.Schema({
     imageUrl: { type: String , required: true },
     year: { type: Number , required: true },
     genre: { type: String , required: true },
-    ratings: {type: [ratingSchema], required: true},
-    averageRating: { type: Number, default: 0 }
+    // ratings: {type: [ratingSchema], required: true},
+    ratings: [
+        {
+            userId: { type: String, required: true},    
+            grade: { type: Number, required: true, min: 1, max: 5},
+        }
+    ],
+    averageRating: { type: Number, default: 1 }
 });
-
-// pour effacer index quand userId unique
-// const Book = mongoose.model('Book', bookSchema);
-
-// Book.syncIndexes();
 
 module.exports = mongoose.model('Book', bookSchema);
