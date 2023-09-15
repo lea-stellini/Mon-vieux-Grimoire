@@ -11,10 +11,10 @@ module.exports = (req, res, next) => {
 
     compressImg = () => {
         const timestamp = new Date().toISOString();
-        const path = `${timestamp}-${req.file.originalname}`;
+        const path = `${timestamp}-${req.file.originalname}.webp`;
             
         sharp(req.file.buffer)
-            .jpeg({quality: 20})
+            .webp({quality: 20})
             .toFile(`./images/${path}`);
                 
         req.compressedFilename = path   
