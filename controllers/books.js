@@ -49,7 +49,6 @@ exports.addRating = (req, res, next) => {
 
 exports.modifyBook = (req, res, next) => {
     const bookObject = req.file ? {
-        // si je modifie l'image
         ...JSON.parse(req.body.book),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.compressedFilename}`
     } : { ...req.body};
@@ -60,19 +59,24 @@ exports.modifyBook = (req, res, next) => {
         if (book.userId != req.auth.userId){
             res.status(403).json({message: 'Non autorisé'});
         } else {
-            const filename = book.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, (error) => {
-                if(error){
-                    return res.status(500).json({error})
-                };
-                Book.updateOne({_id: req.params.id}, {...bookObject, _id: req.params.id})
-                .then(() =>
-                    res.status(200).json({message: 'Livre modifié!'}))
-                .catch(error => 
-                    res.status(401).json({ error }));
-            })
+            unlinkImg = () => {
+                const filename = book.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, (error) => {
+                    if(error){
+                        return res.status(500).json({error})
+                    };
+                })  
+            }
+
+            req.file ? unlinkImg() : null 
+            Book.updateOne({_id: req.params.id}, {...bookObject, _id: req.params.id})
+            .then(() =>
+                res.status(200).json({message: 'Livre modifié!'}))
+            .catch(error => 
+                res.status(401).json({ error }));
+            }
         }
-    })
+    )
     .catch((error) => {
         res.status(400).json({ error });
     })
